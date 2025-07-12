@@ -1,0 +1,18 @@
+{
+  "manifest_version": 3,
+  "name": "yt-dlp Local Downloader",
+  "version": "1.0",
+  "description": "Add a download button to YouTube using a local yt-dlp server.",
+  "permissions": ["scripting", "activeTab"],
+  "host_permissions": ["*://www.youtube.com/*", "http://localhost:8791/"],
+  "content_scripts": [
+    {
+      "matches": ["*://www.youtube.com/*"],
+      "js": ["content.js"]
+    }
+  ],
+  "icons": {
+    "128": "icon128.png",
+    "256": "icon256.png"
+  }
+}
