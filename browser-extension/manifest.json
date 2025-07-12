@@ -12,7 +12,7 @@
     }
   ],
   "icons": {
-    "128": "icon128.png",
-    "256": "icon256.png"
+    "128": "icons/icon128.png",
+    "256": "icons/icon256.png"
   }
 }
