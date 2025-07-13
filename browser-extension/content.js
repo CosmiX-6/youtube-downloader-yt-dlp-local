@@ -1,8 +1,9 @@
 // ==UserScript==
 // @name         YouTube Downloader Floating Button (yt-dlp Local)
 // @namespace    http://tampermonkey.net/
-// @version      1.1
-// @description  Adds a floating premium-style button to download videos using local yt-dlp server.
+// @version      1.0.0
+// @license      MIT
+// @description  Floating premium-style download button with hide on fullscreen and toggle shortcut (Shift+D)
 // @author       Akash
 // @match        https://www.youtube.com/watch*
 // @grant        none
@@ -12,6 +13,7 @@
     'use strict';
 
     const BUTTON_ID = 'yt-dlp-floating-download-btn';
+    let visible = true;
 
     function createFloatingButton() {
         if (document.getElementById(BUTTON_ID)) return;
@@ -56,39 +58,46 @@
 
         btn.onclick = () => {
             const videoId = new URL(location.href).searchParams.get('v');
-            if (!videoId) {
-                alert('Invalid video ID.');
-                return;
-            }
-
+            if (!videoId) return alert('Invalid video ID.');
             fetch(`http://localhost:8791/download?v=${videoId}`)
                 .then(res => {
-                    if (res.ok) {
-                        alert('Download started.');
-                    } else {
-                        alert('Server error. Is yt-dlp server running?');
-                    }
+                    if (res.ok) alert('Download started.');
+                    else alert('Server error. Is yt-dlp server running?');
                 })
-                .catch(() => {
-                    alert('Failed to connect to yt-dlp server.');
-                });
+                .catch(() => alert('Failed to connect to yt-dlp server.'));
         };
 
         document.body.appendChild(btn);
     }
 
-    // Observe URL and DOM changes (SPA + AJAX)
-    const urlObserver = new MutationObserver(() => {
-        if (window.location.href.includes('watch')) {
-            createFloatingButton();
-        }
-    });
+    function toggleButtonVisibility(force) {
+        const btn = document.getElementById(BUTTON_ID);
+        if (!btn) return;
+        visible = typeof force === 'boolean' ? force : !visible;
+        btn.style.display = visible ? 'block' : 'none';
+    }
 
-    urlObserver.observe(document.body, {
-        childList: true,
-        subtree: true,
+    function handleFullscreenChange() {
+        const isFullscreen = !!(document.fullscreenElement || document.webkitFullscreenElement);
+        toggleButtonVisibility(!isFullscreen);
+    }
+
+    function init() {
+        createFloatingButton();
+        document.addEventListener('fullscreenchange', handleFullscreenChange);
+        document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+
+        document.addEventListener('keydown', e => {
+            if (e.shiftKey && e.code === 'KeyD') toggleButtonVisibility();
+        });
+    }
+
+    // SPA-aware
+    const observer = new MutationObserver(() => {
+        if (window.location.href.includes('watch')) init();
     });
+    observer.observe(document.body, { childList: true, subtree: true });
 
     // Initial injection
-    window.addEventListener('load', createFloatingButton);
+    window.addEventListener('load', init);
 })();
