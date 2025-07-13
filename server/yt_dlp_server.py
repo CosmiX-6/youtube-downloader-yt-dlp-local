@@ -1,3 +1,4 @@
+import shutil
 import os
 import subprocess
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -6,7 +7,10 @@ from plyer import notification
 from datetime import datetime
 
 DOWNLOAD_DIR = os.path.join(os.environ["USERPROFILE"], "Downloads/Youtube-Downloaded-Videos")
-YT_DLP_EXE = os.path.join(os.environ["USERPROFILE"], "AppData", "Roaming", "Python", "Python312", "Scripts", "yt-dlp.exe")
+YT_DLP_EXE = shutil.which("yt-dlp")
+if not YT_DLP_EXE:
+    raise RuntimeError("yt-dlp executable not found in PATH. Ensure yt-dlp is installed.")
+
 YT_DLP_CMD = [
     YT_DLP_EXE,
     "-o", os.path.join(DOWNLOAD_DIR, "%(title).50s.%(ext)s"),

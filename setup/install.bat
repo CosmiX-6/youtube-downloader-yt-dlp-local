@@ -38,6 +38,11 @@ python -m pip install --upgrade pip
 :: Install yt-dlp
 echo Installing yt-dlp...
 python -m pip install -U "yt-dlp[default]"
+:: -------- Add Python Scripts to PATH --------
+for /f "delims=" %%i in ('where python') do set PYTHON_PATH=%%i
+for %%i in ("%PYTHON_PATH%") do set PYTHON_DIR=%%~dpi
+set "PY_SCRIPTS=%PYTHON_DIR%Scripts"
+setx PATH "%PY_SCRIPTS%;%PATH%" >nul
 
 :: Install plyer
 echo Installing plyer...
