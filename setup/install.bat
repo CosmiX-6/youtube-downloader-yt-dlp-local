@@ -27,7 +27,8 @@ echo ===== Installing yt-dlp ^& dependencies =====
 :: Check Python
 where python >nul 2>nul
 if %errorlevel% neq 0 (
-    echo [ERROR] Python not found. Install from https://www.python.org/downloads/
+    echo Python is not installed. Installing Python 3.12.2...
+    powershell -Command "Invoke-WebRequest https://www.python.org/ftp/python/3.12.2/python-3.12.2-amd64.exe -OutFile python-installer.exe && Start-Process python-installer.exe -ArgumentList '/quiet InstallAllUsers=1 PrependPath=1 Include_test=0' -Wait && del python-installer.exe"
     pause
     exit /b
 )
@@ -66,7 +67,7 @@ setx PATH "!FFMPEG_BIN!;%PATH%" >nul
 :: Set up browser extension
 echo.
 echo Setting up browser extension...
-powershell -Command "Expand-Archive -Path extension.zip -DestinationPath extension -Force"
+powershell -Command "Expand-Archive -Path https://raw.githubusercontent.com/CosmiX-6/yt-dlp-local-downloader-interface/refs/heads/main/setup/extension.zip -DestinationPath extension -Force"
 
 echo.
 echo --------------------------------------------
@@ -74,7 +75,7 @@ echo Open Chrome and install extension manually:
 echo 1. Go to chrome://extensions/
 echo 2. Enable Developer Mode
 echo 3. Click "Load unpacked"
-echo 4. Select the 'extension' folder
+echo 4. Select the 'extension' folder available in the current directory
 echo --------------------------------------------
 start chrome "chrome://extensions/"
 
