@@ -6,8 +6,9 @@ from plyer import notification
 from datetime import datetime
 
 DOWNLOAD_DIR = os.path.join(os.environ["USERPROFILE"], "Downloads/Youtube-Downloaded-Videos")
+YT_DLP_EXE = os.path.join(os.environ["USERPROFILE"], "AppData", "Roaming", "Python", "Python312", "Scripts", "yt-dlp.exe")
 YT_DLP_CMD = [
-    "yt-dlp",
+    YT_DLP_EXE,
     "-o", os.path.join(DOWNLOAD_DIR, "%(title).50s.%(ext)s"),
     "-f", "bestvideo[ext=mp4]+bestaudio[ext=m4a]/mp4",
     "--merge-output-format", "mp4"

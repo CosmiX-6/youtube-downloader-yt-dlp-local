@@ -28,9 +28,7 @@ echo ===== Installing yt-dlp ^& dependencies =====
 where python >nul 2>nul
 if %errorlevel% neq 0 (
     echo Python is not installed. Installing Python 3.12.2...
-    powershell -Command "Invoke-WebRequest https://www.python.org/ftp/python/3.12.2/python-3.12.2-amd64.exe -OutFile python-installer.exe && Start-Process python-installer.exe -ArgumentList '/quiet InstallAllUsers=1 PrependPath=1 Include_test=0' -Wait && del python-installer.exe"
-    pause
-    exit /b
+    powershell -NoProfile -Command "Invoke-WebRequest -Uri 'https://www.python.org/ftp/python/3.12.2/python-3.12.2-amd64.exe' -OutFile 'python-installer.exe'; Start-Process -FilePath 'python-installer.exe' -ArgumentList '/quiet InstallAllUsers=1 PrependPath=1 Include_test=0' -Wait; Remove-Item 'python-installer.exe'"
 )
 
 :: Upgrade pip
@@ -67,7 +65,20 @@ setx PATH "!FFMPEG_BIN!;%PATH%" >nul
 :: Set up browser extension
 echo.
 echo Setting up browser extension...
-powershell -Command "Expand-Archive -Path https://raw.githubusercontent.com/CosmiX-6/yt-dlp-local-downloader-interface/refs/heads/main/setup/extension.zip -DestinationPath extension -Force"
+
+:: Set URL and paths
+set EXTENSION_URL=https://raw.githubusercontent.com/CosmiX-6/yt-dlp-local-downloader-interface/main/setup/extension.zip
+set EXTENSION_ZIP=extension.zip
+set EXTENSION_DIR=extension
+
+:: Download the extension.zip file
+powershell -NoProfile -Command "Invoke-WebRequest -Uri '%EXTENSION_URL%' -OutFile '%EXTENSION_ZIP%'"
+
+:: Extract it
+powershell -NoProfile -Command "Expand-Archive -Path '%EXTENSION_ZIP%' -DestinationPath '%EXTENSION_DIR%' -Force"
+
+:: Clean up
+del "%EXTENSION_ZIP%"
 
 echo.
 echo --------------------------------------------
